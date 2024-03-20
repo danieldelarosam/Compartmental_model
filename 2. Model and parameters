@@ -1,0 +1,152 @@
+# Load necessary libraries
+install.packages("pacman")
+library(pacman)
+
+p_load(deSolve, reshape2, ggplot2, dplyr)
+
+
+#Initial condition of model
+
+initial_conditions <- c(
+  R = 600,  # Non-susceptible
+  S = 0,    # Susceptible
+  E = 0,    # Colonized type E
+  C = 0,    # Colonized type c
+  K = 0,    # Treated Colonized
+  G = 0,    # Isolated Colonized
+  I = 0,    # Infected
+  A = 0,    # Isolated Infected
+  Admission = 0,  # Cumulative Incidence
+  Incidence = 0   # Incidence
+)
+
+# Define model parameters
+parameters <- c(
+  delta = 0.0004,     # Transmission rate of infected individuals - Any value that will be optimized for the number of observed cases
+  equis = 0.7,     # Relative transmissibility for colonized patients 
+  alfa = 0.32,     # Rate of antibiotic use 
+  epsilon = 0.13,  # Fraction of asymptomatic carriers who develop symptomatic disease 
+  ve = 1 / 4,      # Progression rate to symptomatic disease 
+  lambda = 76,     # Admission rate
+  ene = 0.08,      # Proportion of colonized patients at admission
+  pi = 0.005,      # Proportion of infected patients at admission
+  eme = 0.12,      # Proportion of pre-symptomatic patients at admission 
+  zeta = 0.22,     # Proportion of susceptible patients at admission
+  psi_1 = 1 / 6,   # Discharge rate for non-colonized population
+  psi_2 = 1 / 6,   # Discharge rate for susceptible population
+  psi_3 = 1 / 6,   # Discharge rate for asymptomatic carriers
+  psi_4 = 1 / 12,  # Discharge rate for infected population
+  ache_1 = 1 / 5,  # Bacterial clearance rate due to treatment for infected patients
+  ache_2 = 1 / 5,  # Bacterial clearance rate due to treatment for asymptomatic patients
+  gamma_1 = 0.5,   # Fraction of cured symptomatic carriers after treatment or treatment effectiveness
+  gamma_2 = 0.5,   # Fraction of cured asymptomatic carriers after treatment or treatment effectiveness
+  efe_2 = 0,       # Diagnosis rate of asymptomatic carriers 
+  efe_1 = 0.90,    # Diagnosis rate of symptomatic  
+  jota = 0,        # Treatment rate of asymptomatic carriers
+  sigma_1 = 0.7,   # Effectiveness of treatment on symptomatic patients
+  sigma_2 = 0.7    # Effectiveness of treatment on asymptomatic carriers
+)
+
+follow_up_duration = 570 #Study period
+times <- seq(from = 0, to = follow_up_duration, by = 1) # Time steps (days)
+
+# Define the model
+sir_model <- function(time, state, parameters) {  
+  
+  with(as.list(c(state, parameters)), { 
+    
+    # Calculating the proportion of patients arriving at C compartment
+    kappa=1-eme
+    
+    # Calculating the proportion of suceptible arriving at S compartment from community
+    omega= 1-(zeta+pi+ene)
+    
+    # Defining force of infection (beta) for each group with the ability to transmit the infection
+    B1 = delta                          #For infected patients
+    B2 = delta * (1-gamma_1)            #For infected patients under contact precautions
+    B3 = delta * equis                  #For asymptomatic carriers
+    B4 = delta * equis * (1-gamma_2)    #For asymptomatic carriers under contact precautions
+    
+    # The differential equations
+  
+    dR= lambda*omega - psi_1*R - alfa*R
+    
+    dS= alfa*R - (B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S - psi_2*S + sigma_2*ache_2*K + sigma_1*ache_1*A + lambda*zeta
+    
+    dE= epsilon*(B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S + lambda*ene*eme - jota*E - ve*E - efe_2*E - psi_3*E
+    
+    dC= (1-epsilon)*(B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S + lambda*ene*kappa - psi_3*C - jota*C - efe_2*C + (1-sigma_1)*ache_1*A
+    
+    dK= jota*C + jota*E - sigma_2*ache_2*K - psi_3*K
+    
+    dG= efe_2*E + efe_2*C - psi_3*G
+    
+    dI= ve*E + lambda*pi - psi_4*I - efe_1*I
+    
+    dA= efe_1*I - (1-sigma_1)*ache_1*A - sigma_1*ache_1*A - psi_4*A
+    
+    dAdmission= lambda
+    
+    dIncidence= efe_1*I
+    
+    
+    # Return the number of people in each compartments at each timestep 
+   
+    return(list(c(dR, dS, dE, dC, dK, dG, dI, dA, dAdmission, dIncidence))) 
+  })
+  
+}
+
+# Run simulation
+output <- as.data.frame(ode(y = initial_conditions, 
+                            times = times, 
+                            func = sir_model,
+                            parms = parameters))
+
+View(output)
+
+
+# Optimization of the 'delta' parameter based on the incidence of infection in our institution
+
+#Cases UCSF
+ucsf_cdi <- data.frame(time = c( 30,  60, 90,  120,  150, 180, 210, 240,  270, 300,  330, 360,  390, 420, 450, 480, 510, 540, 570), #Time steps (days)
+                       number_infected = c(31, 57, 98, 118, 142, 169, 209, 247, 283, 317, 367, 411, 456, 499, 524, 550, 588, 621, 649)) #Number of cases
+
+# Function to calculate least square error
+
+error_function <- function(param) {
+  delta <- param[1]  
+  parameters["delta"] <- delta 
+  output <- ode(y = initial_conditions, times = times, func = sir_model, parms = parameters)
+  simulated <- approx(x = output[, "time"], y = output[, "Incidence"], xout = ucsf_cdi$time)$y
+  sum((simulated - ucsf_cdi$number_infected)^2)
+}
+
+# Perfome optimization using "Nelder-Mead"
+optim_result <- optim(parameters["delta"], fn = error_function, method = "Nelder-Mead")
+
+#Display the optimal value of delta found
+optim_result$par
+
+#Update optimal value of delta and run simulation 
+parameters["delta"] <- optim_result$par
+
+output_optimized<- as.data.frame(ode(y = initial_conditions, 
+                     times = times, 
+                     func = sir_model,
+                     parms = parameters))
+
+
+#Visualization of simulations and number of cases at our institution
+ggplot() +
+  geom_line(data = output_optimized, aes(x = time, y= Incidence)) +      
+  geom_point(data = ucsf_cdi, aes(x = time, y = number_infected)
+             , colour = "red") +  
+  xlab("Time (days)")+                                              
+  ylab("Number of infected people") +                                 
+  labs(title = paste("Model fit to UCSF data with optimized delta=" ,
+                     parameters["delta"]))
+
+
+
+
