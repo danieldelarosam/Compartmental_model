@@ -2,9 +2,10 @@
 install.packages("pacman")
 library(pacman)
 
-
 p_load(deSolve, reshape2, ggplot2, dplyr)
 
+
+#1.1 Model and parameter definition
 
 #Initial condition of model
 
@@ -13,8 +14,10 @@ initial_conditions <- c(
   S = 0,    # Susceptible
   E = 0,    # Colonized type E
   C = 0,    # Colonized type c
-  K = 0,    # Treated Colonized
-  G = 0,    # Isolated Colonized
+  K_1 = 0,    # Treated Colonized
+  K_2 = 0,
+  G_1 = 0,    # Isolated Colonized
+  G_2 = 0,    # Isolated Colonized
   I = 0,    # Infected
   A = 0,    # Isolated Infected
   Admission = 0,  # Cumulative Incidence
@@ -23,7 +26,7 @@ initial_conditions <- c(
 
 # Define model parameters
 parameters <- c(
-  delta = 0.0004,     # Transmission rate of infected individuals - Any value that will be optimized for the number of observed cases
+  delta = 0.0004043506,     # Transmission rate of infected individuals - Any value that will be optimized for the number of observed cases
   equis = 0.7,     # Relative transmissibility for colonized patients 
   alfa = 0.32,     # Rate of antibiotic use 
   epsilon = 0.13,  # Fraction of asymptomatic carriers who develop symptomatic disease 
@@ -71,29 +74,24 @@ sir_model <- function(time, state, parameters) {
     # The differential equations
   
     dR= lambda*omega - psi_1*R - alfa*R
+    dS= alfa*R - (B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S - psi_2*S + sigma_2*ache_2*K_1 + sigma_2*ache_2*K_1 + sigma_1*ache_1*A + lambda*zeta
+    dE= epsilon*(B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S + lambda*ene*eme - jota*E - ve*E - efe_2*E - psi_3*E
+    dC= (1-epsilon)*(B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S + lambda*ene*kappa - psi_3*C - jota*C - efe_2*C + (1-sigma_1)*ache_1*A
     
-    dS= alfa*R - (B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S - psi_2*S + sigma_2*ache_2*K + sigma_1*ache_1*A + lambda*zeta
-    
-    dE= epsilon*(B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S + lambda*ene*eme - jota*E - ve*E - efe_2*E - psi_3*E
-    
-    dC= (1-epsilon)*(B1*I+B2*A+B3*E+B3*C+B3*K+B4*G)*S + lambda*ene*kappa - psi_3*C - jota*C - efe_2*C + (1-sigma_1)*ache_1*A
-    
-    dK= jota*C + jota*E - sigma_2*ache_2*K - psi_3*K
-    
-    dG= efe_2*E + efe_2*C - psi_3*G
+    dK_1= jota*E - sigma_2*ache_2*K_1 - psi_3*K_1 - ve*K_1
+    dK_2= jota*C - sigma_2*ache_2*K_2 - psi_3*K_2
+    dG_1= efe_2*E - psi_3*G_1 - ve*G_1 
+    dG_2= efe_2*C - psi_3*G_2 
+   
     
     dI= ve*E + lambda*pi - psi_4*I - efe_1*I
-    
-    dA= efe_1*I - (1-sigma_1)*ache_1*A - sigma_1*ache_1*A - psi_4*A
-    
+    dA= efe_1*I - (1-sigma_1)*ache_1*A - sigma_1*ache_1*A - psi_4*A + ve*K_1 + ve*G_1 
     dAdmission= lambda
-    
-    dIncidence= efe_1*I
-    
+    dIncidence= efe_1*I + ve*K_1 + ve*G_1 
     
     # Return the number of people in each compartments at each timestep 
    
-    return(list(c(dR, dS, dE, dC, dK, dG, dI, dA, dAdmission, dIncidence))) 
+    return(list(c(dR, dS, dE, dC, dK_1,dK_2, dG_1, dG_2, dI, dA, dAdmission, dIncidence))) 
   })
   
 }
@@ -106,6 +104,9 @@ output <- as.data.frame(ode(y = initial_conditions,
 
 View(output)
 
+
+
+#1.2 Model calibration: we optimized the delta parameter (transmission rate) based on the institutional CDI incidence
 
 # Optimization of the 'delta' parameter based on the incidence of infection in our institution
 
@@ -132,6 +133,10 @@ optim_result$par
 #Update optimal value of delta and run simulation 
 parameters["delta"] <- optim_result$par
 
+
+
+#1.3 Optimized model results
+
 output_optimized<- as.data.frame(ode(y = initial_conditions, 
                      times = times, 
                      func = sir_model,
@@ -147,6 +152,13 @@ ggplot() +
   ylab("Number of infected people") +                                 
   labs(title = paste("Model fit to UCSF data with optimized delta=" ,
                      parameters["delta"]))
+
+
+
+
+
+
+
 
 
 
