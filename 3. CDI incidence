@@ -1,1 +1,268 @@
+# Load necessary libraries
+library(deSolve)
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+
+# Define initial conditions
+initial_conditions <- c(
+  R = 600,  # Non-susceptible
+  S = 0,    # Susceptible
+  E = 0,    # Colonized type E
+  C = 0,    # Colonized type c
+  K_1 = 0,    # Treated Colonized
+  K_2 = 0,
+  G_1 = 0,    # Isolated Colonized
+  G_2 = 0,    # Isolated Colonized
+  I = 0,    # Infected
+  A = 0,    # Isolated Infected
+  Admission = 0,  # Cumulative Incidence
+  Incidence = 0   # Incidence
+)
+
+# Define model parameters
+parameters <- c(
+  delta = 0.0004043506,     # Transmission rate of infected individuals - Any value that will be optimized for the number of observed cases
+  equis = 0.7,     # Relative transmissibility for colonized patients 
+  alfa = 0.32,     # Rate of antibiotic use 
+  epsilon = 0.13,  # Fraction of asymptomatic carriers who develop symptomatic disease 
+  ve = 1 / 4,      # Progression rate to symptomatic disease 
+  lambda = 76,     # Admission rate
+  ene = 0.08,      # Proportion of colonized patients at admission
+  pi = 0.005,      # Proportion of infected patients at admission
+  eme = 0.12,      # Proportion of pre-symptomatic patients at admission 
+  zeta = 0.22,     # Proportion of susceptible patients at admission
+  psi_1 = 1 / 6,   # Discharge rate for non-colonized population
+  psi_2 = 1 / 6,   # Discharge rate for susceptible population
+  psi_3 = 1 / 6,   # Discharge rate for asymptomatic carriers
+  psi_4 = 1 / 12,  # Discharge rate for infected population
+  ache_1 = 1 / 5,  # Bacterial clearance rate due to treatment for infected patients
+  ache_2 = 1 / 5,  # Bacterial clearance rate due to treatment for asymptomatic patients
+  gamma_1 = 0.5,   # Fraction of cured symptomatic carriers after treatment or treatment effectiveness
+  gamma_2 = 0.5,   # Fraction of cured asymptomatic carriers after treatment or treatment effectiveness
+  efe_2 = 0,       # Diagnosis rate of asymptomatic carriers 
+  efe_1 = 0.90,    # Diagnosis rate of symptomatic  
+  jota = 0,        # Treatment rate of asymptomatic carriers
+  sigma_1 = 0.7,   # Effectiveness of treatment on symptomatic patients
+  sigma_2 = 0.7    # Effectiveness of treatment on asymptomatic carriers
+)
+
+follow_up_duration = 570
+times <- seq(from = 0, to = follow_up_duration, by = 1) 
+
+# Define the model
+sir_model <- function(time, state, parameters) {  
+  
+  with(as.list(c(state, parameters)), { 
+    
+    # Calculating the proportion of patients arriving at C compartment
+    kappa=1-eme
+    
+    # Calculating the proportion of suceptible arriving at S compartment from community
+    omega= 1-(zeta+pi+ene)
+    
+    # Defining force of infection (beta) for each group with the ability to transmit the infection
+    B1 = delta                          #For infected patients
+    B2 = delta * (1-gamma_1)            #For infected patients under contact precautions
+    B3 = delta * equis                  #For asymptomatic carriers
+    B4 = delta * equis * (1-gamma_2)    #For asymptomatic carriers under contact precautions
+    
+    # The differential equations
+    
+    dR= lambda*omega - psi_1*R - alfa*R
+    dS= alfa*R - (B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S - psi_2*S + sigma_2*ache_2*K_1 + sigma_2*ache_2*K_1 + sigma_1*ache_1*A + lambda*zeta
+    dE= epsilon*(B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S + lambda*ene*eme - jota*E - ve*E - efe_2*E - psi_3*E
+    dC= (1-epsilon)*(B1*I+B2*A+B3*E+B3*C+B3*K_1+B3*K_2+B4*G_1+B4*G_2)*S + lambda*ene*kappa - psi_3*C - jota*C - efe_2*C + (1-sigma_1)*ache_1*A
+    
+    dK_1= jota*E - sigma_2*ache_2*K_1 - psi_3*K_1 - ve*K_1
+    dK_2= jota*C - sigma_2*ache_2*K_2 - psi_3*K_2
+    dG_1= efe_2*E - psi_3*G_1 - ve*G_1 
+    dG_2= efe_2*C - psi_3*G_2 
+    
+    
+    dI= ve*E + lambda*pi - psi_4*I - efe_1*I
+    dA= efe_1*I - (1-sigma_1)*ache_1*A - sigma_1*ache_1*A - psi_4*A + ve*K_1 + ve*G_1 
+    dAdmission= lambda
+    dIncidence= efe_1*I + ve*K_1 + ve*G_1 
+    
+    # Return the number of people in each compartments at each timestep 
+    
+    return(list(c(dR, dS, dE, dC, dK_1,dK_2, dG_1, dG_2, dI, dA, dAdmission, dIncidence))) 
+  })
+  
+}
+
+# Run simulation
+output <- as.data.frame(ode(y = initial_conditions, 
+                            times = times, 
+                            func = sir_model,
+                            parms = parameters))
+
+View(output)
+
+
+
+##____________________Extended Sensitivity analysis_____________________________
+
+# Cargar librerías necesarias
+library(deSolve)
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+
+
+
+# Lista de parámetros a variar
+param_names <- c("delta", "equis", "alfa", "epsilon", "ve", "lambda", 
+                 "ene", "pi", "eme", "zeta", "psi_1", "psi_2", "psi_3", 
+                 "psi_4", "ache_1", "ache_2", "gamma_1", "gamma_2", "efe_2", "efe_1", "jota",
+                 "sigma_1", "sigma_2" )
+
+
+# Función para ajustar un parámetro y correr la simulación
+run_simulation <- function(param_name, adjustment_factor) {
+  adjusted_parameters <- parameters
+  adjusted_parameters[param_name] <- parameters[param_name] * adjustment_factor
+  output <- as.data.frame(ode(y = initial_conditions, 
+                              times = times, 
+                              func = sir_model,
+                              parms = adjusted_parameters))
+  output$Incidence_1000 <- (output$Incidence / output$Admission) * 1000
+  return(output[nrow(output), "Incidence_1000"])
+}
+
+
+# Crear un data frame para almacenar los resultados
+results <- expand.grid(parameter = param_names, 
+                       adjustment_factor = seq(-0.1, 0.1, by = 0.01), 
+                       Incidence_1000 = NA_real_)
+
+# Llenar el data frame con los resultados de las simulaciones
+for (i in 1:nrow(results)) {
+  results$Incidence_1000[i] <- run_simulation(results$parameter[i], 
+                                              1 + results$adjustment_factor[i])
+}
+
+
+# Transformar los datos para la visualización
+results$PercentageChange <- results$adjustment_factor * 100 # Convertir factor de ajuste a porcentaje
+
+
+# Lista de parámetros específicos para graficar
+parametros_graph <- c("delta", "equis", "alfa", "epsilon", "ve", "lambda", "ene", "pi", "eme", "zeta", "psi_1", "psi_2", "psi_3", "psi_4", "ache_1", "gamma_1", "efe_1", "sigma_1")
+
+# Filtrar el dataframe 'results' para incluir solo las filas con los parámetros específicos
+results_filtrado <- subset(results, parameter %in% parametros_graph)
+
+
+# Definir la función para crear gráficos
+
+crear_grafico <- function(data_frame, param_name, title, xlab, ylab) {
+  data_frame_filtrado <- subset(data_frame, parameter == param_name)
+  p <- ggplot(data_frame_filtrado, aes(x = PercentageChange, y = Incidence_1000)) +
+    geom_line() +
+    geom_point(data = subset(data_frame_filtrado, PercentageChange == 0), color = "black", size = 1.0) +
+    ggtitle(title) +
+    labs(x = xlab, y = ylab) +
+    theme_minimal() +
+    theme(panel.border = element_rect(colour = "black", fill=NA, size=1),
+          axis.title.x = element_text(size = 8),
+          axis.title.y = element_text(size = 8),
+          plot.title = element_text(size = 9)) +
+    ylim(13.5, 16.5)
+  return(p)
+  
+}
+
+
+grafico_delta <- crear_grafico(results_filtrado, "delta", "CDI incidence vs δ", "% change (δ)", "CDI incidence")
+grafico_equis <- crear_grafico(results_filtrado, "equis", "CDI incidence vs x", "% change (x)", "CDI incidence")
+grafico_alfa <- crear_grafico(results_filtrado, "alfa", "CDI incidence vs α", "% change (α)", "CDI incidence")
+grafico_epsilon <- crear_grafico(results_filtrado, "epsilon", "CDI incidence vs ε", "% change (ε)", "CDI incidence")
+grafico_ve <- crear_grafico(results_filtrado, "ve", "CDI incidence vs ν", "% change (ν)", "CDI incidence")
+grafico_lambda <- crear_grafico(results_filtrado, "lambda", "CDI incidence vs λ", "% change (λ)", "CDI incidence")
+grafico_ene <- crear_grafico(results_filtrado, "ene", "CDI incidence vs n", "% change (n)", "CDI incidence")
+grafico_pi <- crear_grafico(results_filtrado, "pi", "CDI incidence vs π", "% change (π)", "CDI incidence")
+grafico_eme <- crear_grafico(results_filtrado, "eme", "CDI incidence vs m", "% change of m (m)", "CDI incidence")
+grafico_zeta <- crear_grafico(results_filtrado, "zeta", "CDI incidence vs z", "% change of (z)", "CDI incidence")
+grafico_psi_1 <- crear_grafico(results_filtrado, "psi_1", "CDI incidence vs Ψ1", "% change of (Ψ1)", "CDI incidence")
+grafico_psi_2 <- crear_grafico(results_filtrado, "psi_2", "CDI incidence vs Ψ2", "% change of (Ψ2)", "CDI incidence")
+grafico_psi_3 <- crear_grafico(results_filtrado, "psi_3", "CDI incidence vs Ψ3", "% change of (Ψ3)", "CDI incidence")
+grafico_psi_4 <- crear_grafico(results_filtrado, "psi_4", "CDI incidence vs Ψ4", "% change of (Ψ4)", "CDI incidence")
+grafico_ache_1 <- crear_grafico(results_filtrado, "ache_1", "CDI incidence vs h1", "% change (h1)", "CDI incidence")
+grafico_gamma_1 <- crear_grafico(results_filtrado, "gamma_1", "CDI incidence vs ɣ1", "% change (ɣ1)", "CDI incidence")
+grafico_efe_1 <- crear_grafico(results_filtrado, "efe_1", "CDI incidence vs f1", "% change (f1)", "CDI incidence")
+grafico_sigma_1 <- crear_grafico(results_filtrado, "sigma_1", "CDI incidence vs σ1", "% change (σ1)", "CDI incidence")
+
+
+# Mostrar los todos gráficos en una cuadrícula
+grid.arrange(grafico_delta, grafico_equis, grafico_alfa, grafico_epsilon, grafico_ve, grafico_lambda, grafico_ene, grafico_pi, grafico_eme, grafico_zeta, grafico_psi_1, grafico_psi_2, grafico_psi_3, grafico_psi_4, grafico_ache_1, grafico_gamma_1, grafico_efe_1, grafico_sigma_1, ncol = 6)
+
+
+
+
+
+
+##____________________Prevalence interventions______________________________________
+
+library(deSolve)
+library(reshape2)
+library(ggplot2)
+library(dplyr)
+
+# Define el modelo y condiciones iniciales aquí (igual que el código proporcionado anteriormente)
+
+# Función para simular y calcular Incidence_1000 para un conjunto dado de parámetros
+run_simulation <- function(param1, param2, param1_name, param2_name) {
+  parameters[param1_name] <- param1
+  parameters[param2_name] <- param2
+  output <- as.data.frame(ode(y = initial_conditions, times = times, func = sir_model, parms = parameters))
+  output <- output %>%
+    mutate(Incidence_1000 = (Incidence/Admission)*1000)
+  return(tail(output$Incidence_1000, 1))
+}
+
+# Función para generar datos para el gráfico de contorno
+generate_contour_data <- function(param1_range, param2_range, param1_name, param2_name) {
+  results <- expand.grid(param1 = param1_range, param2 = param2_range)
+  results$Incidence_1000 <- mapply(run_simulation, results$param1, results$param2, MoreArgs = list(param1_name = param1_name, param2_name = param2_name))
+  return(results)
+}
+
+
+# Generar datos para el gráfico de contorno 1
+contour_data1 <- generate_contour_data(seq(0, 1, by = 0.1), seq(0.5, 1, by = 0.1), "jota", "sigma_2")
+contour_data2 <- generate_contour_data(seq(0, 1, by = 0.1), seq(0.5, 1, by = 0.1), "efe_2", "gamma_2")
+
+matrix_data_1 <- acast(contour_data1, param1 ~ param2, value.var = "Incidence_1000")
+matrix_data_2 <- acast(contour_data2, param1 ~ param2, value.var = "Incidence_1000")
+
+
+
+j_range <- seq(0, 1, by = 0.1)  
+sigma_2_range <- seq(0.5, 1, by = 0.1)  
+
+
+num_levels_3 <- 9
+custom_red_palette_3 <- colorRampPalette(c( "#67b933", "#acd307", "#d2d004", "#F9CE01" ,"#F3B602", "#EFA007", "#EB930C" ,"#E98511" ,"#E67816"))
+Figure_Contour_1_1 = filled.contour(j_range, sigma_2_range, matrix_data_1,  color.palette = custom_red_palette_3,
+                                  plot.title = title(main = "", 
+                                  xlab = "Treatment rate of asymptomatic carriers (j)" , 
+                                  ylab = "Effectiveness of treatment  (σ2)"),
+                                  nlevels = num_levels_3)
+
+
+efe_2_range <- seq(0, 1, by = 0.1)  
+gamma_2_range <- seq(0.5, 1, by = 0.1)
+
+num_levels_4 <- 9
+custom_red_palette <- colorRampPalette(c( "#67b933", "#acd307", "#d2d004", "#F9CE01" ,"#F3B602", "#EFA007", "#EB930C" ,"#E98511" ,"#E67816"))
+Figure_Contour_1_2 = filled.contour(efe_2_range, gamma_2_range, matrix_data_2,  color.palette = custom_red_palette,
+                                    plot.title = title(main = "", 
+                                    xlab = "Isolation rate of asymptomatic carriers (f2)", ylab = "Effectiveness of contact precautions (ɣ2)"),
+                                    nlevels = num_levels_4)
+
+
+
 
