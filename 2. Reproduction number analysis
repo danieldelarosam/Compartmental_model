@@ -8,7 +8,7 @@ p_load(gdtools, epiR, ggplot2, dplyr, gdtools, gridExtra)
 
 #2.1 Mote Carlo Simulations. 
 #The reproduction number fuctiond erivate from Next Generation Matrix analyis 
-#derivated from script - 5. Matlab - Reproduction number (5.1)
+#derivated from script - 5. Matlab - Reproduction number (4.1)
  
 #Reproduction number function:
 
@@ -224,7 +224,7 @@ grid.arrange (g0, g1, g2, g3, g4, g5, g6, g7, g8, g9, g10, g11, g12, g13,
 
 #Dataframe of indexes
 #Numeric resultd used for this figure derivates from the seinsitivity index analysis 
-#presented in script 5. Matlab - Reproduction number (5.2)
+#presented in script 5. Matlab - Reproduction number (4.2)
 
 indexes <- data.frame(
   Variable = c("psi_2", "psi_1", "psi_3", "psi_4", "delta", "equis", "alpha", 
