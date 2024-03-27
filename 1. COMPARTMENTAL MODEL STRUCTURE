@@ -2,14 +2,16 @@
 install.packages("pacman")
 library(pacman)
 
+
 # Use p_load function from 'pacman' to load required packages
 p_load(deSolve, reshape2, ggplot2, dplyr)
 
 
+
 # 1.1 MODEL STRUCTURE AND PARAMETERS DEFINITION
 
-
 # Define initial conditions for the model, representing the starting number of individuals in each compartment.
+
 initial_conditions <- c(
   R = 600,        # Non-susceptible
   S = 0,          # Susceptible
@@ -108,15 +110,10 @@ View(output)
 
 
 
-
-
-
-
-
 #1.2 MODEL CALIBRATION AND TRANSMISSION RATE (DELTA) OPTIMIZATION
 
-
 # Optimization of the 'delta' parameter based on the incidence of infection within our institution.
+
 #Cases UCSF
 ucsf_cdi <- data.frame(time = c( 30,  60, 90,  120,  150, 180, 210, 240,  270, 300,  330, 360,  390, 420, 450, 480, 510, 540, 570), #Time steps in days
                        number_infected = c(31, 57, 98, 118, 142, 169, 209, 247, 283, 317, 367, 411, 456, 499, 524, 550, 588, 621, 649)) #Number of cases
@@ -157,7 +154,5 @@ ggplot() +
   ylab("Number of infected people") +                                 
   labs(title = paste("Model fit to UCSF data with optimized delta=" ,
                      parameters["delta"]))
-
-
 
 
