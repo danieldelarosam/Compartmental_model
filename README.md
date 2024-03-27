@@ -1,33 +1,25 @@
-Compartmental_model
+COMPARTMENTAL MODEL (SCRIPTS)
 
-Compartmental model for C. difficile transmission in the healthcare setting. We used Rstudio and Matlab to perform analyses, packages used are included in the scripts following the next order:
-
+This repository outlines the compartmental model designed to simulate the transmission of C. difficile in healthcare environments. It elaborates on both the structure of the model and the analyses performed, utilizing RStudio and MATLAB for our simulations and analyses.
 
 1. COMPARTMENTAL MODEL STRUCTURE
 
-1.1 MODEL STRUCTURE AND PARAMETERS DEFINITION: we describe the model structure and values for the parameter of interest used for simulation 
+1.1 MODEL STRUCTURE AND PARAMETERS DEFINITION: The model's structure is described, and the parameters of interest used in the simulations are defined.
 
-1.2 MODEL CALIBRATION AND TRANSMISSION RATE (DELTA) OPTIMIZATION: we optimized the transmission rate (delta parameter) to calibrate the model with the CDI incidence in our institution
-
+1.2 MODEL CALIBRATION AND TRANSMISSION RATE (DELTA) OPTIMIZATION: The transmission rate (delta parameter) was optimized to calibrate the model with the Clostridioides difficile infection (CDI) incidence in our institution.
 
 
 2. REPRODUCTION NUMBER ANALYSES
    
-2.1 MONTE CARLO SIMULATIONS: we use the function estimate by next-generation matrix (see script 4. Matlab - Reproduction number analyses) to run Montecarlo simulation with 1000 values
-   obtained by random selection of parameter distributions. Mean and parameter distributions are found in Table 1. Description of input parameters and values used in estimations (main body of manuscript)
-   We estimated and visualized the reproduction number distribution.
+2.1 MONTE CARLO SIMULATIONS: we used the function estimated by the next-generation matrix (refer to script 4. MATLAB - Reproduction Number Analyses) to conduct Monte Carlo simulations with 1000 values derived through random selection from parameter distributions. Mean and parameter distributions are detailed in Table 1, "Description of Input Parameters and Values Used in Estimations" (main body of manuscript). The distribution of the reproduction number was estimated and visualized.
    
-2.2 PARTIAL RANK CORRELATION COEFFICIENTS: we performed a partial rank correlation analysis to assess the relationship between the input values of the parameters and R0 estimates resulting from the 
-   Montecarlo simulations analysis. Scatterplots were generated to compare the basic reproduction number with each parameter.
-
-2.3 LOCAL SENSITIVITY ANALYSIS: sensitivity analysis using fixed point estimations to assess the influence of parameters on R0 estimation, using the partial derivative of the reproduction number as a
-   function of each parameter. We presented normalized indices to illustrate the impact of parameter variations. These indices were determined by calculating the relative change ratio in each parameter of 
-   interest to the relative change in R0 estimation. Indices were estimated in Matlab (see script 4. Matlab - Reproduction number analyses) and index results were used to generate a graphical representation 
-   in this part of the script.
+2.2 PARTIAL RANK CORRELATION COEFFICIENTS (PRCC): the relationship between the input values of the parameters and R0 estimates from the Monte Carlo simulations was assessed. Scatterplots were created to compare the basic reproduction number with each parameter.
  
-2.4 EXTENDED SENSITIVITY ANALYSIS (REPRODUCTION NUMBER): We calculated the impact (on the reproduction number) of varying each parameter within a percentage change range while keeping all other parameters      constant 
+2.3 LOCAL SENSITIVITY ANALYSIS: a sensitivity analysis was conducted using fixed-point estimations to evaluate the influence of parameters on the R0 estimate, using the partial derivative of the reproduction number as a function of each parameter. Normalized indices were presented to depict the impact of parameter variations. These indices were calculated by determining the relative change ratio in each parameter to the relative change in the R0 estimate. Indices were estimated in MATLAB (see script 4. MATLAB - Reproduction Number Analyses), and the results were visually represented in this section of the script.
+ 
+2.4 EXTENDED SENSITIVITY ANALYSIS (REPRODUCTION NUMBER): the impact on the reproduction number of varying each parameter within a percentage change range, while keeping all other parameters constant, was calculated.
 
-2.5 EXTENDED SENSITIVITY ANALYSIS OF TREATMENT AND ISOLATION ON ASYMPTOMATIC CARRIERS: we calculated the impact of varying parameters related to the contact precaution implementation (parameter f_2 and         gamma_2) and treatment (parameter j and sigma_2) on the reproduction number estimation. The changes in both parameters were represented in contour graphs to visualize the effect of both rates and the        effectiveness of interventions. 
+2.5 EXTENDED SENSITIVITY ANALYSIS OF TREATMENT AND ISOLATION ON ASYMPTOMATIC CARRIERS: the impact of varying parameters related to the implementation of contact precautions (parameters f_2 and gamma_2) and treatment (parameters j and sigma_2) on the reproduction number estimate was calculated. Changes in both parameters were depicted in contour graphs to visualize the impact of both rates and the effectiveness of interventions.
    
 
 
@@ -35,9 +27,9 @@ Compartmental model for C. difficile transmission in the healthcare setting. We 
 
 3.1 MODEL STRUCTURE AND PARAMETER VALUES: similar to script 1. COMPARTMENTAL MODEL STRUCTURE.
 
-3.2 EXTENDED SENSITIVITY ANALYSIS (INCIDENCE):  We calculated the impact (on the CDI incidence) of varying each parameter within a percentage change range while keeping all other parameters constant. CID   
-    incidence was estimated as number of cases per 1000 admissions. 
+3.2 EXTENDED SENSITIVITY ANALYSIS (INCIDENCE): The impact on CDI incidence of varying each parameter within a percentage change range, while keeping all other parameters constant, was calculated. CDI incidence was estimated as the number of cases per 1000 admissions.
 
-3.3 EXTENDED SENSITIVITY ANALYSIS OF TREATMENT AND ISOLATION ON ASYMPTOMATIC CARRIERS:  we calculated the impact of varying parameters related to the contact precaution implementation (parameter f_2 and 
-    gamma_2) and treatment (parameter j and sigma_2) on the CDI incidence. The changes in both parameters were represented in contour graphs to visualize the effect of both rates and the effectiveness of 
-    interventions. 
+
+3.3 EXTENDED SENSITIVITY ANALYSIS OF TREATMENT AND ISOLATION ON ASYMPTOMATIC CARRIERS: the impact of varying parameters related to the implementation of contact precautions (parameters f_2 and gamma_2) and treatment (parameters j and sigma_2) on the CDI incidence was calculated. Changes in both parameters were depicted in contour graphs to illustrate the impact of both rates and the effectiveness of interventions.
+
+
