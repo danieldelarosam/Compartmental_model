@@ -1,6 +1,8 @@
 COMPARTMENTAL MODEL (SCRIPTS)
 
-This repository outlines the compartmental model designed to simulate the transmission of C. difficile in healthcare environments. It elaborates on both the structure of the model and the analyses performed, utilizing RStudio and MATLAB for our simulations and analyses.
+This repository outlines the compartmental model designed to simulate the transmission of C. difficile in healthcare environments. It elaborates on both the structure of the model and the analyses performed, utilizing RStudio and MATLAB for our simulations and analyses. 
+
+Results of the model are included in the manuscript entitled: Assessing the impact of asymptomatic carriers and infection control interventions on healthcare-associated C. difficile transmission: a compartmental model approach.
 
 1. COMPARTMENTAL MODEL STRUCTURE
 
