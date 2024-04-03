@@ -158,7 +158,7 @@ parametros_graph <- c("delta", "equis", "alfa", "epsilon", "ve", "lambda", "ene"
 
 # Filtering results to include only the selected parameters. 
 filtered_results <- subset(results, parameter %in% parametros_graph)
-
+View(filtered_results)
 
 # Function to generate and customize plots for each parameter's sensitivity analysis. 
 # This function takes a filtered dataset, a parameter name, and labels, creating a plot that visually represents the sensitivity of CDI incidence to changes in that parameter.
@@ -202,8 +202,9 @@ grafico_sigma_1 <- crear_grafico(filtered_results, "sigma_1", "CDI incidence vs 
 
 
 # Combination of plots with grid.arrange function
-grid.arrange(grafico_delta, grafico_equis, grafico_alfa, grafico_epsilon, grafico_ve, grafico_lambda, grafico_ene, grafico_pi, grafico_eme, grafico_zeta, grafico_psi_1, grafico_psi_2, grafico_psi_3, grafico_psi_4, grafico_ache_1, grafico_gamma_1, grafico_efe_1, grafico_sigma_1, ncol = 6)
 
+grid.arrange(grafico_psi_3, grafico_psi_2, grafico_psi_1, grafico_psi_4, grafico_gamma_1, grafico_sigma_1, grafico_ache_1, grafico_zeta, grafico_efe_1, grafico_alfa, grafico_ve, grafico_pi, grafico_epsilon, grafico_eme, grafico_equis, grafico_lambda, grafico_delta, grafico_ene,  ncol = 6)
+             
 
 
 
@@ -272,3 +273,7 @@ Figure_Contour_1_2 = filled.contour(efe_2_range, gamma_2_range, matrix_data_2,  
                                     plot.title = title(main = "", 
                                     xlab = "Isolation rate of asymptomatic carriers (f2)", ylab = "Effectiveness of contact precautions (ɣ2)"),
                                     nlevels = num_levels_4)
+
+
+
+
