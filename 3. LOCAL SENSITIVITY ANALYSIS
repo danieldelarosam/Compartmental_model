@@ -1,0 +1,60 @@
+#3.1 LOCAL SENSITIVITY ANALYSIS (FIGURE)
+
+#Numeric results of the partial derivates of R0 for each parameter 
+#were obtained in Matlab 2: Sensitive index and used for this script.
+
+sensitive_indexes <- data.frame(
+
+Variable = c("delta", "lambda", "x", "z", "a" , 
+             "v", "f1", "e", "h1", "p4", "g1", 
+             "sigma", "p1", "p3", "p2"),
+Index = c(1.0000, 1.0000, 0.9347, 0.3002, 0.2397, 
+          -0.0004, -0.0124, -0.0011, -0.0200, -0.0329, -0.0464, 
+          -0.0273, -0.2397, -0.9343, -1.0000)
+)
+
+
+#Sensitivity analysis figure
+
+Figure_3 <- ggplot(sensitive_indexes, aes(x = reorder(Variable, -Index), y = Index)) +
+  geom_hline(yintercept = c(-1.1, -1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, 
+                            -0.3, -0.2, -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 
+                            0.7, 0.8, 0.9, 1, 1.1), colour = "gray", 
+             linetype = "dashed") +
+  geom_bar(stat = "identity", fill = "darkgrey", colour = "black") +
+  labs(x = "", y = "Percentual change on R0 or sensitivity index", 
+       title = "                                    Sensitivity Index") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 0, hjust = 1),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  ) +
+  coord_flip() +
+  guides(fill = "none") +
+  scale_y_continuous(
+    limits = c(-1.1, 1.1),
+    breaks = c( -1.1, -1.0, -0.9, -0.8, -0.7, -0.6, -0.5, -0.4, -0.3, -0.2, 
+                -0.1, 0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1),
+    labels = c("", "-1.0","","-0.8","","-0.6","","-0.4","","-0.2","", "0", "", 
+               "0.2", "", "0.4", "", "0.6", "", "0.8", "", "1.0", "")
+  ) +
+  scale_x_discrete(labels = c("δ Transmission rate of symptomatic patients",
+                              "λ Hospital admission rate",
+                              "x Relative transmissibility of asymptomatic carriers", 
+                              "z Fraction of susceptible patients admitted",
+                              "α Rate of antibiotic use during hospitalization",
+                              "ν Progression rate to symptomatic disease",    
+                              "f1 Diagnosis rate of symptomatic patients",
+                              "ε Proportion of asymptomatic carriers developing symptoms",
+                              "h1 CDI Treatment duration", 
+                              "Ψ4 Discharge rate of symptomatic patients", 
+                              "ɣ1 Effectiveness of contact precautions",
+                              "σ1 Fraction of cured infected patients after treatment",
+                              "Ψ1 Discharge rate of non-susceptible patients",
+                              "Ψ3 Discharge rate of asymptomatic carrier patients", 
+                              "Ψ2 Discharge rate of susceptible patients"))
+
+
+
+Figure_3
