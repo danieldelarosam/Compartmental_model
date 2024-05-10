@@ -1,0 +1,62 @@
+% Next Generation Matrix 
+
+%F matrix
+syms e S B1 B2 B3 B4 % Define symbolic variables
+
+% Definition of the matrix F with symbolic values
+F = sym(zeros(8,8)); % Initialize the matrix F as a matrix of symbolic zeros
+
+% Fill the rows of F with the new symbolic values, using e
+F(1,:) = [e*B3*S, e*B3*S, e*B3*S, e*B3*S, e*B4*S,e*B4*S, e*B1*S, e*B2*S];
+F(2,:) = [(1-e)*B3*S, (1-e)*B3*S, (1-e)*B3*S, (1-e)*B3*S, (1-e)*B4*S, (1-e)*B4*S, (1-e)*B1*S, (1-e)*B2*S];
+
+% Display the matrix F
+disp(F);
+
+
+%V matrix
+syms j v f_2 p_3 s_1 h_1 s_2 h_2 p_4 f_1 % Define symbolic variables
+
+% Definition of the matrix V with symbolic values
+V = [
+(j + v + f_2 + p_3), 0, 0, 0, 0, 0, 0, 0;
+0, (p_3 + j + f_2), 0, 0, 0, 0, 0, -(1-s_1) * h_1,;
+-j, 0, (s_2 * h_2 + p_3 + v), 0, 0, 0, 0, 0;
+0, -j, 0, (s_2 * h_2 + p_3 ), 0, 0, 0, 0;
+-f_2, 0, 0, 0, (p_3 + v),0, 0, 0;
+0, -f_2, 0, 0, 0, p_3, 0, 0;
+-v, 0, 0, 0, 0, 0, (p_4+f_1), 0;
+0, 0, -v, 0, -v, 0, -f_1, ((1-s_1) * h_1 + s_1 * h_1 + p_4);
+];
+
+V_invers = inv(V);
+disp(V_invers);
+
+% Next Generation Matrix (Q)
+Q = F * V_invers;
+
+%eigenvalues
+R_num = eig(Q);
+
+% Display the eigenvalue
+disp(R_num);
+
+%Subtitution of some parameters
+syms B1 B2 B3 B4 S d g_1 g_2 x a l p_1 p_2 z
+
+% Define the new functions
+B1_new = d;
+B2_new = d * (1 - g_1);
+B3_new = d * x;
+B4_new = d * x * (1 - g_2);
+S_new = (l*z * (p_1+a) + a*l*(1-z)) / (p_2*(p_1+a));
+
+% Replacement in the expression R_num function
+R_final = subs(R_num, {B1, B2, B3, B4, S}, {B1_new, B2_new, B3_new, B4_new, S_new});
+
+% Display the new function R_final
+disp(R_final);
+
+% Sumplification of R_final
+R_final_simpl=simplify(R_final);
+disp(R_final_simpl);
