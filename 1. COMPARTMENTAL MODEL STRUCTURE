@@ -20,7 +20,7 @@ initial_conditions <- c(
   G_1 = 0,                    # Isolated asymptomatic carriers type G1 with treatment
   G_2 = 0,                    # Isolated asymptomatic carriers type G2 with treatment
   I = 0,                      # Symptomatic patients 
-  A = 0,                      # symptomatic patients with treatment and contact precautions
+  A = 0,                      # Symptomatic patients with treatment and contact precautions
   Admission = 0,              # Cumulative number of admissions
   Incidence = 0,              # Cumulative number of cases
   dDischarge_overall=0,       # Number of overall discharges
@@ -29,7 +29,7 @@ initial_conditions <- c(
 
 # Define the SIR model function to simulate the dynamics of infection within a hospital
 parameters <- c(
-  delta = 0.0003996096,    # Transmission rate of infected individuals (Any value that will be optimized for the number of observed cases)
+  delta = 0.0003996096,    # Transmission rate of infected individuals, to be optimized based on observed institutional cases. 
   equis = 0.7,             # Relative transmission for colonized patients.
   alfa = 0.32,             # Rate of antibiotic use.
   epsilon = 0.13,          # Fraction of asymptomatic carriers who develop symptomatic disease during hospitalization
@@ -69,10 +69,10 @@ comp_model <- function(time, state, parameters) {
     omega= 1-(zeta+pi+ene)
     
     # Define the force of infection (beta1,beta2, beta3 and beta4) for each group capable of transmitting the infection, 
-    B1 = delta                          #For symptomatic patients
-    B2 = delta * (1-gamma_1)            #For symptomatic under contact precautions
-    B3 = delta * equis                  #For asymptomatic carriers
-    B4 = delta * equis * (1-gamma_2)    #For asymptomatic carriers under contact precautions
+    B1 = delta                          # For symptomatic patients
+    B2 = delta * (1-gamma_1)            # For symptomatic under contact precautions
+    B3 = delta * equis                  # For asymptomatic carriers
+    B4 = delta * equis * (1-gamma_2)    # For asymptomatic carriers under contact precautions
     
     # Differential equations describing the flow between compartments
     
@@ -115,8 +115,7 @@ View(model_output)
 
 #1.2 TRANSMISSION RATE (DELTA) OPTIMIZATION
 
-
-# Function to optimize the transmission rate (delta) by minimizing the difference between cumulative observed and simulated cases 
+# Function to optimize the transmission rate (delta) by minimizing the difference between cumulative observed cases (UCSF) and simulated cases (Model).
 delta_optimization <- function(delta) {
   parameters['delta'] <- delta
   result <- as.data.frame(ode(y = initial_conditions, times = times, func = comp_model, parms = parameters))
@@ -124,22 +123,20 @@ delta_optimization <- function(delta) {
   return(abs(649 - final_incidence))
 }
 
-# Optimize 'delta' 
+# Optimize 'delta'.
 optimized_delta <- optimize(f = delta_optimization, interval = c(0, 1), tol = 1e-12)
 print(optimized_delta)
 
-# Update delta in the parameter set and rerun the simulation with the optimized value
+# Update delta in the parameter set and rerun the simulation with the optimized value.
 parameters['delta'] <- optimized_delta$minimum
 optimized_output <- as.data.frame(ode(y = initial_conditions, times = times, func = comp_model, parms = parameters))
 View(optimized_output)
 
 
 
-
-
 #1.3 SIMULATIONS: ESTIMATING CDI INCIDENCE AND PROPORTION OF COLONIZED AND INFECTED PATIENTS
 
-# Generate random values ​​for parameters to run analyses (uniform distribution with established range)
+# Generate random values for parameters to run analyses (uniform distribution with established range).
 
 generate_uniform_values <- function(mean, n) {
   lower_bound <- mean * 0.8
@@ -153,13 +150,13 @@ generate_uniform_values_2 <- function(mean, n) {
   runif(n, lower_bound, upper_bound)
 }
 
-num_simulations <- 1000  # Number of simulations to perform 
+num_simulations <- 1000  # Number of simulations to perform.
 
-parameters_list <- list( # List of random variables for simulations 
-  delta = generate_uniform_values(0, num_simulations), #Any value since it will be optimize
+parameters_list <- list( # List of random variables for simulations. 
+  delta = generate_uniform_values(0, num_simulations), #Any value since it will be optimize.
   equis = generate_uniform_values(0.7, num_simulations),
   alfa = generate_uniform_values(0.32, num_simulations),
-  epsilon = generate_uniform_values(0.12, num_simulations),
+  epsilon = generate_uniform_values(0.13, num_simulations),
   ve = generate_uniform_values(1/4, num_simulations),
   lambda = generate_uniform_values(76, num_simulations),
   ene = generate_uniform_values(0.08, num_simulations),
@@ -207,10 +204,10 @@ for (i in 1:num_simulations) {
   current_parameters <- lapply(parameters_list, function(x) x[i])
   # Function to optimize delta
   delta_optimization <- function(delta) {
-    current_parameters['delta'] <- delta  # Actualizar delta en los parámetros actuales
+    current_parameters['delta'] <- delta # Update delta in current parameters
     result <- ode(y = initial_conditions, times = times, func = comp_model, parms = current_parameters)
     final_incidence <- tail(result[,"Incidence"], 1)
-    return(abs(649 - final_incidence))  # Ajusta este objetivo según tu caso específico
+    return(abs(649 - final_incidence))
   }
   
   # Optimize delta
@@ -231,6 +228,7 @@ for (i in 1:num_simulations) {
                                                               t(data.frame(param_data))))
 }
 
+
 View(model_simulations)
 
 
@@ -238,19 +236,26 @@ View(model_simulations)
 colnames(model_simulations)[6:length(colnames(model_simulations))] <- names(parameters_list)
 
 #Estimate CDI incidence as (Incidence/Admission)*1000
-model_simulations$CDI_incidence <- round((model_simulations$Incidence / model_simulations$Admission) * 1000, digits = 1)
+model_simulations$CDI_incidence <- round((model_simulations$Incidence / model_simulations$Admission) * 1000, digits = 3)
 model_simulations <- model_simulations[c("CDI_incidence", setdiff(names(model_simulations), "CDI_incidence"))]
 mean(model_simulations$CDI_incidence)
+median(model_simulations$CDI_incidence)
+quantile(model_simulations$CDI_incidence)
 
 #Estimate proportion of asymptomatic carriers at discharge as dDischarge_colonized/dDischarge_overall
 
-model_simulations$Colonized_people_discharge <- round((model_simulations$dDischarge_colonized / model_simulations$dDischarge_overall), digits = 1)
+model_simulations$Colonized_people_discharge <- round((model_simulations$dDischarge_colonized / model_simulations$dDischarge_overall), digits = 3)
 model_simulations <- model_simulations[c("Colonized_people_discharge", setdiff(names(model_simulations), "Colonized_people_discharge"))]
+View(model_simulations)
 mean(model_simulations$Colonized_people_discharge)
+median(model_simulations$Colonized_people_discharge)
+quantile(model_simulations$Colonized_people_discharge)
 
-#Mean proportion of patient admited as colonized
+#Mean proportion of admited colonized patient
 
 mean(model_simulations$ene)
+median(model_simulations$ene)
+quantile(model_simulations$ene)
 
 
 # Values for estimating reproduction number of simulations
@@ -321,10 +326,12 @@ colnames(model_simulations_delta_zero)[6:length(colnames(model_simulations_delta
 
 
 #Estimate CDI incidence as (Incidence/Admission)*1000
-model_simulations_delta_zero$CDI_incidence <- round((model_simulations_delta_zero$Incidence / model_simulations_delta_zero$Admission) * 1000, digits = 1)
+model_simulations_delta_zero$CDI_incidence <- round((model_simulations_delta_zero$Incidence / model_simulations_delta_zero$Admission) * 1000, digits = 2)
 model_simulations_delta_zero <- model_simulations_delta_zero[c("CDI_incidence", setdiff(names(model_simulations_delta_zero), "CDI_incidence"))]
 
 mean(model_simulations_delta_zero$CDI_incidence)
+median(model_simulations_delta_zero$CDI_incidence)
+quantile(model_simulations_delta_zero$CDI_incidence)
 
 
 
@@ -376,12 +383,13 @@ for (i in 1:num_simulations) {
 # View the R0 and parameters used
 View(Reproduction_number)
 median(Reproduction_number$R_value)
+quantile(Reproduction_number$R_value, probs = c(0.25, 0.5, 0.75))
+
 mean(Reproduction_number$R_value)
 sd(Reproduction_number$R_value)
 
 
 # Visualizing the distribution of the basic reproduction number
-
 Reproduction_number <- Reproduction_number %>%
   mutate(R_value_rounded = round(R_value, 1))
 
@@ -403,5 +411,3 @@ boxplot_R <- ggplot(Reproduction_number, aes(x = "", y = R_value)) +
         panel.grid.major = element_blank(),  
         panel.grid.minor = element_blank()) + # 
   labs(title = "b) R0 boxplot", x = "", y = "R0 value")
-
-
