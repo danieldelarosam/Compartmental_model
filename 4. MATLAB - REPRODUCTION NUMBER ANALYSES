@@ -5,9 +5,6 @@ library(pacman)
 
 # Use p_load function from 'pacman' to load required packages
 p_load(ggplot2, dplyr, gridExtra, scales, deSolve, reshape2, latticeExtra)
-install.packages("latticeExtra")
-library(latticeExtra)
-
 
 #4.1 EXTENDED SENSITIVITY ANALYSIS: R NUMBER
 
@@ -154,6 +151,8 @@ filled.contour(j_range, sigma_2_range, Contour_1,
                          labcex = 0.8)})
 
 
+
+
 # Contour plot for contact precaution on asymptomatic carriers
 
 f_2_range <- seq(0, 0.5, by = 0.1).      # Changes rate of contact precautions implementation
@@ -175,7 +174,7 @@ Contour_2 <- outer (f_2_range, gamma_2_rango, FUN = function(f_2, g_2) { (d*l*(a
                                                                                              4*e*f_2*g_2*h_2*p_3^2*p_4^2*s_2*v*x + 2*e*f_2^2*g_2*h_2*p_3*p_4^2*s_2*v*x - e*f_2*h_1*h_2^2*p_3*p_4*s_2^2*v*x - 2*f_1*f_2*g_2*h_2^2*p_3*p_4*s_2^2*v*x - 2*f_2*g_2*h_1*h_2^2*p_3*p_4*s_2^2*v*x - 3*e*f_1*h_1*h_2*p_3^2*s_1*s_2*v^2*x - e*f_2^2*h_1*h_2*p_4*s_1*s_2*v^2*x - e*f_1*f_2*h_1*h_2*j*s_1*s_2*v^2*x + 4*e*f_1*f_2*g_2*h_2*p_3*p_4*s_2*v^2*x + 4*e*f_1*f_2*g_2*h_2*p_3^2*p_4*s_2*v*x + 2*e*f_1*f_2^2*g_2*h_2*p_3*p_4*s_2*v*x + 4*e*f_2*g_2*h_1*h_2*p_3*p_4*s_2*v^2*x + 4*e*f_2*g_2*h_1*h_2*p_3^2*p_4*s_2*v*x + e*f_2*g_2*h_1*j*p_3*p_4*s_1*v^2*x + e*f_2*g_2*h_1*j*p_3^2*p_4*s_1*v*x + 2*e*f_2*g_2*h_2*j*p_3*p_4^2*s_2*v*x - 4*e*f_1*f_2*h_1*h_2*p_3*s_1*s_2*v^2*x - 4*e*f_1*f_2*h_1*h_2*p_3^2*s_1*s_2*v*x - 2*e*f_1*f_2^2*h_1*h_2*p_3*s_1*s_2*v*x - 2*e*f_1*h_1*h_2*j*p_3*s_1*s_2*v^2*x - 2*e*f_1*h_1*h_2*j*p_3^2*s_1*s_2*v*x - e*f_2*h_1*h_2*j*p_4*s_1*s_2*v^2*x - e*f_2*h_1*h_2*p_3*p_4*s_1*s_2*v^2*x - 2*e*f_2*h_1*h_2*p_3^2*p_4*s_1*s_2*v*x - 2*e*f_2^2*h_1*h_2*p_3*p_4*s_1*s_2*v*x - e*h_1*h_2*j*p_3*p_4*s_1*s_2*v^2*x - e*h_1*h_2*j*p_3^2*p_4*s_1*s_2*v*x + e*f_1*f_2*g_2*h_1*h_2^2*j*s_2^2*v*x + e*f_1*f_2*g_2*h_1*h_2^2*p_3*s_2^2*v*x + e*f_1*f_2*g_2*h_2^2*j*p_4*s_2^2*v*x + e*f_1*f_2^2*g_2*h_1*h_2*s_1*s_2*v^2*x + e*f_2*g_2*h_1*h_2^2*j*p_4*s_2^2*v*x + 2*e*f_1*f_2*g_2*h_2^2*p_3*p_4*s_2^2*v*x + 2*e*f_2*g_2*h_1*h_2^2*p_3*p_4*s_2^2*v*x - 2*e*f_1*f_2*h_1*h_2^2*p_3*s_1*s_2^2*v*x + e*f_2^2*g_2*h_1*h_2*p_4*s_1*s_2*v^2*x - e*f_2*h_1*h_2^2*p_3*p_4*s_1*s_2^2*v*x - 3*f_1*f_2*g_2*h_1*h_2*j*p_3*s_2*v*x - 2*e*f_1*f_2*h_2*j*p_3*p_4*s_2*v*x - 3*f_1*f_2*g_2*h_2*j*p_3*p_4*s_2*v*x - 3*f_2*g_2*h_1*h_2*j*p_3*p_4*s_2*v*x + e*f_1*f_2*g_2*h_1*h_2^2*s_1*s_2^2*v^2*x + e*f_1*f_2^2*g_2*h_1*h_2^2*s_1*s_2^2*v*x + e*f_2^2*g_2*h_1*h_2^2*p_4*s_1*s_2^2*v*x + 
                                                                                              e*f_1*f_2*g_2*h_1*h_2*p_3*s_2*v^2*x + 2*e*f_1*f_2*g_2*h_1*h_2*p_3^2*s_2*v*x + e*f_1*f_2*g_2*h_1*j*p_3*s_1*v^2*x + e*f_1*f_2*g_2*h_1*j*p_3^2*s_1*v*x + e*f_1*f_2*g_2*h_2*j*p_4*s_2*v^2*x + e*f_1*f_2*g_2*h_1*h_2*s_1*s_2*v^3*x + e*f_1*f_2*g_2*h_1*h_2*j*p_3*s_2*v*x + 2*e*f_1*f_2*g_2*h_2*j*p_3*p_4*s_2*v*x + e*f_2*g_2*h_1*h_2*j*p_3*p_4*s_2*v*x - 2*e*f_1*f_2*h_1*h_2*j*p_3*s_1*s_2*v*x - 2*e*f_2*h_1*h_2*j*p_3*p_4*s_1*s_2*v*x + e*f_1*f_2*g_2*h_1*h_2*j*s_1*s_2*v^2*x + 3*e*f_1*f_2*g_2*h_1*h_2*p_3*s_1*s_2*v^2*x + 2*e*f_1*f_2*g_2*h_1*h_2*p_3^2*s_1*s_2*v*x + 2*e*f_1*f_2^2*g_2*h_1*h_2*p_3*s_1*s_2*v*x + e*f_2*g_2*h_1*h_2*j*p_4*s_1*s_2*v^2*x + 2*e*f_2^2*g_2*h_1*h_2*p_3*p_4*s_1*s_2*v*x + e*f_1*f_2*g_2*h_1*h_2^2*p_3*s_1*s_2^2*v*x + e*f_1*f_2*g_2*h_1*h_2*j*p_3*s_1*s_2*v*x + e*f_2*g_2*h_1*h_2*j*p_3*p_4*s_1*s_2*v*x))/(p_2*p_3*(p_3 + h_2*s_2)*(a + p_1)*(f_1 + p_4)*(h_1 + p_4)*(p_3 + v)*(p_3 + v + h_2*s_2)*(f_2 + j + p_3)*(f_2 + j + p_3 + v)) })
 
-#Plot
+# Contour plot
 num_levels_2 <- seq(0.15, 0.6, by = 0.05)
 custom_blue_red_palette_2 <- colorRampPalette(c("#F3F3F3","#F2F2F2","#F1F1F1" ,"#F0F0F0", '#EFEFEF', "#DFDFDF", "#CFCFCF","#BFBFBF", "#AFAFAF"))
 
@@ -351,7 +350,7 @@ View(all_results)
 
 # Function to create a line chart for a specific parameter
 
-crear_grafico_lineas <- function(data, parameter_name, graph_title, xlab, ylab) {
+cre_graph_lin <- function(data, parameter_name, graph_title, xlab, ylab) {
   # Filter data for the specific parameter
   data_filtered <- data %>% filter(Parameter == parameter_name)
   # Create the plot
@@ -371,30 +370,28 @@ crear_grafico_lineas <- function(data, parameter_name, graph_title, xlab, ylab) 
 
 # Generate and display line charts for each parameter
 
-grafico_para_delta <- crear_grafico_lineas(all_results, "delta", "Incidence vs δ", "% change (δ)", "CDI Incidence")
-grafico_para_lambda <- crear_grafico_lineas(all_results, "lambda", "Incidence vs λ", "% change (λ)", "CDI Incidence")
-grafico_para_alfa <- crear_grafico_lineas(all_results, "alfa", "Incidence vs α", "% change (α)", "CDI Incidence")
-grafico_para_psi_1 <- crear_grafico_lineas(all_results, "psi_1", "Incidence vs Ψ1", "% change (Ψ1)", "CDI Incidence")
-grafico_para_psi_2 <- crear_grafico_lineas(all_results, "psi_2", "Incidence vs Ψ2", "% change (Ψ2)", "CDI Incidence")
-grafico_para_psi_3 <- crear_grafico_lineas(all_results, "psi_3", "Incidence vs Ψ3", "% change (Ψ3)", "CDI Incidence")
-grafico_para_psi_4 <- crear_grafico_lineas(all_results, "psi_4", "Incidence vs Ψ4", "% change (Ψ4)", "CDI Incidence")
-grafico_para_ache_1 <- crear_grafico_lineas(all_results, "ache_1", "Incidence vs h1", "% change (h1)", "CDI Incidence")
-grafico_para_zeta <- crear_grafico_lineas(all_results, "zeta", "Incidence vs z", "% change (z)", "CDI Incidence")
-grafico_para_equis <- crear_grafico_lineas(all_results, "equis", "Incidence vs x", "% change (x)", "CDI Incidence")
-grafico_para_epsilon <- crear_grafico_lineas(all_results, "epsilon", "Incidence vs ε", "% change (ε)", "CDI Incidence")
-grafico_para_ve <- crear_grafico_lineas(all_results, "ve", "Incidence vs ν", "% change (ν)", "CDI Incidence")
-grafico_para_gamma_1 <- crear_grafico_lineas(all_results, "gamma_1", "Incidence vs ɣ1", "% change (ɣ1)", "CDI Incidence")
-grafico_para_sigma_1 <- crear_grafico_lineas(all_results, "sigma_1", "Incidence vs σ1", "% change (σ1)", "CDI Incidence")
-grafico_para_efe_1 <- crear_grafico_lineas(all_results, "efe_1", "Incidence vs f1", "% change (f1)", "CDI Incidence")
-grafico_para_ene <- crear_grafico_lineas(all_results, "ene", "Incidence vs n", "% change (n)", "CDI Incidence")
-grafico_para_eme <- crear_grafico_lineas(all_results, "eme", "Incidence vs m", "% change (m)", "CDI Incidence")
-grafico_para_pi <- crear_grafico_lineas(all_results, "pi", "Incidence vs π", "% change (π)", "CDI Incidence")
+graph_delta <- cre_graph_lin(all_results, "delta", "Incidence vs δ", "% change (δ)", "CDI Incidence")
+graph_lambda <- cre_graph_lin(all_results, "lambda", "Incidence vs λ", "% change (λ)", "CDI Incidence")
+graph_alfa <- cre_graph_lin(all_results, "alfa", "Incidence vs α", "% change (α)", "CDI Incidence")
+graph_psi_1 <- cre_graph_lin(all_results, "psi_1", "Incidence vs Ψ1", "% change (Ψ1)", "CDI Incidence")
+graph_psi_2 <- cre_graph_lin(all_results, "psi_2", "Incidence vs Ψ2", "% change (Ψ2)", "CDI Incidence")
+graph_psi_3 <- cre_graph_lin(all_results, "psi_3", "Incidence vs Ψ3", "% change (Ψ3)", "CDI Incidence")
+graph_psi_4 <- cre_graph_lin(all_results, "psi_4", "Incidence vs Ψ4", "% change (Ψ4)", "CDI Incidence")
+graph_ache_1 <- cre_graph_lin(all_results, "ache_1", "Incidence vs h1", "% change (h1)", "CDI Incidence")
+graph_zeta <- cre_graph_lin(all_results, "zeta", "Incidence vs z", "% change (z)", "CDI Incidence")
+graph_equis <- cre_graph_lin(all_results, "equis", "Incidence vs x", "% change (x)", "CDI Incidence")
+graph_epsilon <- cre_graph_lin(all_results, "epsilon", "Incidence vs ε", "% change (ε)", "CDI Incidence")
+graph_ve <- cre_graph_lin(all_results, "ve", "Incidence vs ν", "% change (ν)", "CDI Incidence")
+graph_gamma_1 <- cre_graph_lin(all_results, "gamma_1", "Incidence vs ɣ1", "% change (ɣ1)", "CDI Incidence")
+graph_sigma_1 <- cre_graph_lin(all_results, "sigma_1", "Incidence vs σ1", "% change (σ1)", "CDI Incidence")
+graph_efe_1 <- cre_graph_lin(all_results, "efe_1", "Incidence vs f1", "% change (f1)", "CDI Incidence")
+graph_ene <- cre_graph_lin(all_results, "ene", "Incidence vs n", "% change (n)", "CDI Incidence")
+graph_eme <- cre_graph_lin(all_results, "eme", "Incidence vs m", "% change (m)", "CDI Incidence")
+graph_pi <- cre_graph_lin(all_results, "pi", "Incidence vs π", "% change (π)", "CDI Incidence")
 
 # Merged figures 
-grid.arrange(grafico_para_psi_3, grafico_para_psi_2, grafico_para_psi_4, grafico_para_psi_1, grafico_para_gamma_1, grafico_para_sigma_1, grafico_para_ache_1, grafico_para_efe_1, grafico_para_zeta, grafico_para_alfa, grafico_para_ve,grafico_para_pi,grafico_para_eme,grafico_para_epsilon, grafico_para_ene, grafico_para_equis, grafico_para_lambda,grafico_para_delta,
+grid.arrange(graph_psi_3, graph_psi_2, graph_psi_4, graph_psi_1, graph_gamma_1, graph_sigma_1, graph_ache_1, graph_efe_1, graph_zeta, graph_alfa, graph_ve,graph_pi,graph_eme,graph_epsilon, graph_ene, graph_equis, graph_lambda,graph_delta,
   ncol = 6)
-
-
 
 
 
@@ -486,6 +483,4 @@ Figure_Contour_1_2 = filled.contour(efe_2_range, gamma_2_range, matrix_data_2,
                                               levels = num_levels_4,
                                               add = TRUE,
                                               labcex = 1.0)   })
-
-
 
