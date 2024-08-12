@@ -10,17 +10,13 @@ This repository provides code for a compartmental model developed to simulate th
 
 1.4 ESTIMATION OF REPRODUCTION NUMBER: Estimating the reproduction number for simulations in section 1.3. R0 formula is derived from Matlab 1: Reproduction number function
 
-
-
-
-
-2.  SENSITIVITY ANALYSES
+2. GLOBAL SENSITIVITY ANALYSIS
 
 2.1 GLOBAL SENSITIVITY ANALYSIS: REPRODUCTION NUMBER: We estimate R0 function using 1000 random values for each parameter to subsequently perform partial rank correlation coefficients
 
 2.2 PARTIAL RANK CORRELATION COEFFICIENTS (PRCC): REPRODUCTION NUMBER:  relationship between the input parameter values and R0 estimates from prior simulations (2.1) was assessed. Additionally, scatterplots were created to compare the basic reproduction number with each parameter.
 
-3. GLOBAL SENSITIVITY ANALYSIS
+3. LOCAL SENSITIVITY ANALYSIS
  
 3.1 LOCAL SENSITIVITY ANALYSIS: a local sensitivity analysis was conducted using fixed-point estimations to evaluate the influence of parameters on the R0 estimate. We used the partial derivative of the reproduction number as a function of each parameter. Normalized indices were presented to depict the impact of parameter variations. These indices were calculated by determining the relative change ratio in each parameter to the relative change in the R0 estimate. Indices were estimated in MATLAB (see script Matlab 2: Sensitive index), and results were visually represented in this section of the script.
 
