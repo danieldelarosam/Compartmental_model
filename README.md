@@ -1,21 +1,20 @@
-COMPARTMENTAL MODEL (SCRIPTS)
-
-This repository presents a compartmental model designed to simulate the transmission of C. difficile in healthcare settings. It provides details  on  model's structure and subanalyses conducted, utilizing RStudio and MATLAB software. 
-
-Model's results are included in the manuscript titled "Assessing the Impact of Asymptomatic Carriers and Infection Control Interventions on Healthcare-Associated C. difficile Transmission: A Compartmental Model Approach."
-
+This repository provides code for a compartmental model developed to simulate the transmission dynamics of C. difficile within healthcare settings. It includes the model's structure and subanalyses conducted using RStudio and MATLAB. The findings of this model are presented in the manuscript titled "Assessing the Impact of Asymptomatic Carriers and Infection Control Interventions on Healthcare-Associated C. difficile Transmission: A Compartmental Model Approach."
 
 1. COMPARTMENTAL MODEL STRUCTURE
 
 1.1 MODEL STRUCTURE AND PARAMETERS DEFINITION: The model's structure is described, and the parameters of interest used in the simulations are defined.
 
-1.2 TRANSMISSION RATE (DELTA) OPTIMIZATION: The transmission rate (delta parameter) was optimized to calibrate the model with the Clostridioides difficile infection (CDI) cases observed in our institution.
+1.2 TRANSMISSION RATE (DELTA) OPTIMIZATION: The transmission rate (delta parameter) was optimized with the Clostridioides difficile infection (CDI) cases observed in our institution.
 
 1.3 SIMULATIONS: Simulations using 1000 random values for each parameter and optimized delta parameter.
 
-1.4 ESTIMATION OF REPRODUCTION NUMBER: Estimation of the reproduction number for simulations in section 1.3. R0 formula is derived from Matlab 1: Reproduction number function
+1.4 ESTIMATION OF REPRODUCTION NUMBER: Estimating the reproduction number for simulations in section 1.3. R0 formula is derived from Matlab 1: Reproduction number function
 
-2. GLOBAL SENSITIVITY ANALYSIS
+
+
+
+
+2.  SENSITIVITY ANALYSES
 
 2.1 GLOBAL SENSITIVITY ANALYSIS: REPRODUCTION NUMBER: We estimate R0 function using 1000 random values for each parameter to subsequently perform partial rank correlation coefficients
 
