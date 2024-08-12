@@ -14,7 +14,7 @@ This repository provides code for a compartmental model developed to simulate th
 
 2.1 GLOBAL SENSITIVITY ANALYSIS: REPRODUCTION NUMBER: We estimate R0 function using 1000 random values for each parameter to subsequently perform partial rank correlation coefficients
 
-2.2 PARTIAL RANK CORRELATION COEFFICIENTS (PRCC): REPRODUCTION NUMBER:  relationship between the input parameter values and R0 estimates from prior simulations (2.1) was assessed. Additionally, scatterplots were created to compare the basic reproduction number with each parameter.
+2.2 PARTIAL RANK CORRELATION COEFFICIENTS (PRCC): REPRODUCTION NUMBER:  the relationship between the input parameter values and R0 estimates from prior simulations (2.1) was assessed. Additionally, scatterplots were created to compare the relation of the basic reproduction number with each parameter.
 
 3. LOCAL SENSITIVITY ANALYSIS
  
